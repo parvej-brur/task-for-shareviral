@@ -43,34 +43,23 @@ export const Colors = {
   tabIconSelected: teal,
 } as const;
 
-// The swatch for each named category colour. Kept as pastel background +
-// deep, legible foreground so the same pairing works as an icon tint, a tag
-// fill, or a soft card background. `rose` is tuned away from `Colors.danger`
-// on purpose — a work category rendered in an "error red" reads as alarming.
 export const CategorySwatches: Record<
   CategoryColorId,
   { bg: string; fg: string }
 > = {
-  teal: { bg: "#E2F1F3", fg: "#0C5E69" },
-  indigo: { bg: "#E8EDFD", fg: "#33489E" },
-  amber: { bg: "#FCEFD9", fg: "#A8690A" },
-  green: { bg: "#E1F3EB", fg: "#0E6C49" },
-  rose: { bg: "#FBE7EF", fg: "#AD3D74" },
-  violet: { bg: "#EEE7FB", fg: "#5B3FA6" },
+  teal: { bg: "#D8F5F5", fg: "#006A6B" },
+  indigo: { bg: "#E0F1FF", fg: "#1D5B92" },
+  amber: { bg: "#FBECD9", fg: "#7B4D00" },
+  green: { bg: "#E6F3DF", fg: "#3B651F" },
+  rose: { bg: "#FFE7E6", fg: "#8B3B3E" },
+  violet: { bg: "#F3EAFF", fg: "#674689" },
 };
 
-// Kept for categories with no colour assigned (e.g. rows written before this
-// feature existed) — same swatches, ordered for a stable hash fallback.
 export const CategoryPalette: { bg: string; fg: string }[] =
   CATEGORY_COLOR_IDS.map((id) => CategorySwatches[id]);
 
 export const NeutralTag = { bg: "#EEF2F3", fg: "#5A6B72" } as const;
 
-/**
- * `key` is a category's chosen colour id when it has one, or its id/name as a
- * fallback seed for legacy categories without a colour — a stable pastel is
- * still better than every uncoloured category looking identical.
- */
 export function categoryColor(key: string | null | undefined): {
   bg: string;
   fg: string;
