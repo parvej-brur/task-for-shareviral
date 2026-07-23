@@ -1,31 +1,40 @@
-import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  type StyleProp,
+  type ViewStyle,
+} from "react-native";
 
-import { AppFonts } from '@/components/fonts';
-import { Radius } from '@/styles/layout';
+import { AppFonts } from "@/components/fonts";
+import { Radius } from "@/styles/layout";
 
 type StatusChipProps = {
   label: string;
   color: string;
-  /** Light fill behind the label; falls back to a translucent tint of `color`. */
   muted?: string;
   showDot?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
-/**
- * An outlined status chip — the "Confirmed"-style pill from the reference. A
- * coloured hairline border and matching label on a soft fill, with an optional
- * status dot. Reads as a genuine status indicator, not a coloured blob.
- */
-export function StatusChip({ label, color, muted, showDot = true, style }: StatusChipProps) {
+export function StatusChip({
+  label,
+  color,
+  muted,
+  showDot = true,
+  style,
+}: StatusChipProps) {
   return (
     <View
       style={[
         styles.chip,
         { borderColor: color, backgroundColor: muted ?? `${color}14` },
         style,
-      ]}>
-      {showDot ? <View style={[styles.dot, { backgroundColor: color }]} /> : null}
+      ]}
+    >
+      {showDot ? (
+        <View style={[styles.dot, { backgroundColor: color }]} />
+      ) : null}
       <Text numberOfLines={1} style={[styles.label, { color }]}>
         {label}
       </Text>
@@ -35,10 +44,10 @@ export function StatusChip({ label, color, muted, showDot = true, style }: Statu
 
 const styles = StyleSheet.create({
   chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 5,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     paddingLeft: 8,
     paddingRight: 10,
     paddingVertical: 4,
