@@ -1,16 +1,23 @@
 import type { Category, RemoteTask } from "@/types/task";
 
-// Seed data used by the mock backend until Supabase is wired up.
+// Seed data for the mock backend. Mirrors supabase/schema.sql
 export const seedCategories: Category[] = [
-  { id: "cat-design", name: "Design", createdAt: "2026-07-01T09:00:00.000Z" },
+  {
+    id: "cat-design",
+    name: "Design",
+    color: "violet",
+    createdAt: "2026-07-01T09:00:00.000Z",
+  },
   {
     id: "cat-development",
     name: "Development",
+    color: "indigo",
     createdAt: "2026-07-01T09:05:00.000Z",
   },
   {
     id: "cat-research",
     name: "Research",
+    color: "teal",
     createdAt: "2026-07-01T09:10:00.000Z",
   },
 ];

@@ -116,6 +116,9 @@ export class MockTaskRepository implements TaskRepository {
     const category: Category = {
       id: generateId("cat"),
       name: input.name,
+      // Matches the DB default: `color` is nullable, and the UI derives a
+      // swatch from the id when none is set.
+      color: input.color ?? null,
       createdAt: nowIso(),
     };
     store.write(KEYS.categories, [...this.readCategories(), category]);

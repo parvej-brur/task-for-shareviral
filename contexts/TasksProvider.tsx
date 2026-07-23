@@ -137,7 +137,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
 
   const createCategory = useCallback(async (input: NewCategory): Promise<Category> => {
     const created = await taskRepository.createCategory(input);
-    dispatch({ type: 'category/add', category: created });
+    dispatch({ type: 'category/upsert', category: created });
     return created;
   }, []);
 
