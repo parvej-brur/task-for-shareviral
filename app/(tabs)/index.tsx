@@ -35,22 +35,13 @@ import {
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { common } from "@/styles/common";
 import { Radius, Shadow, Spacing } from "@/styles/layout";
-import type { Task, TaskGroup, TaskSortKey } from "@/types/task";
+import type { Category, Task, TaskGroup, TaskSortKey } from "@/types/task";
 
 const GROUP_LABELS: Record<TaskGroup, string> = {
   all: "All",
   todo: "To Do",
   inProgress: "In Progress",
   done: "Done",
-};
-
-/**
- * The list heading names whichever segment is active, so "All Tasks" is one
- * state of the same heading rather than a second, competing screen title.
- */
-const SECTION_TITLES: Record<TaskGroup, string> = {
-  ...GROUP_LABELS,
-  all: "All Tasks",
 };
 
 const SORT_KEYS: { label: string; value: TaskSortKey }[] = [
@@ -99,9 +90,9 @@ export default function TaskListScreen() {
     { key: "done", label: GROUP_LABELS.done, count: counts.done },
   ];
 
-  const categoryNames: Record<string, string> = {};
+  const categoriesById: Record<string, Category> = {};
   for (const category of categories) {
-    categoryNames[category.id] = category.name;
+    categoriesById[category.id] = category;
   }
 
   const categoryOptions: FilterOption[] = [
@@ -113,7 +104,7 @@ export default function TaskListScreen() {
   ];
 
   const activeCategoryName = categoryId
-    ? (categoryNames[categoryId] ?? "Category")
+    ? (categoriesById[categoryId]?.name ?? "Category")
     : null;
 
   // A stable two-part tally rather than a sentence
@@ -148,9 +139,7 @@ export default function TaskListScreen() {
     return (
       <TaskListItem
         task={item}
-        categoryName={
-          item.categoryId ? categoryNames[item.categoryId] : undefined
-        }
+        category={item.categoryId ? categoriesById[item.categoryId] : undefined}
         onPress={handlePressTask}
         onToggleComplete={handleToggleComplete}
         onToggleStar={toggleStarred}
@@ -203,9 +192,16 @@ export default function TaskListScreen() {
     <View style={styles.header}>
       <View style={styles.sectionHeader}>
         <View style={styles.sectionHeaderText}>
-          <Text style={styles.eyebrow}>{summary}</Text>
           <Text style={styles.sectionTitle}>My Tasks</Text>
+
+          <SyncStatusBar
+            isOffline={isOffline}
+            status={status}
+            lastRefreshedAt={lastRefreshedAt}
+            error={error}
+          />
         </View>
+
         <FilterDropdown
           options={categoryOptions}
           value={categoryId}
@@ -216,8 +212,10 @@ export default function TaskListScreen() {
       {featured ? (
         <FeaturedTask
           task={featured}
-          categoryName={
-            featured.categoryId ? categoryNames[featured.categoryId] : undefined
+          category={
+            featured.categoryId
+              ? categoriesById[featured.categoryId]
+              : undefined
           }
           onPress={handlePressTask}
         />
@@ -244,12 +242,6 @@ export default function TaskListScreen() {
           </Pressable>
         ) : null}
       </View>
-      <SyncStatusBar
-        isOffline={isOffline}
-        status={status}
-        lastRefreshedAt={lastRefreshedAt}
-        error={error}
-      />
       <View style={styles.fullBleed}>
         <SegmentedFilter
           segments={segments}
@@ -258,15 +250,6 @@ export default function TaskListScreen() {
         />
       </View>
       <View style={styles.listControls}>
-        <View style={styles.listHeading}>
-          <Text style={styles.listTitle} numberOfLines={1}>
-            {SECTION_TITLES[group]}
-          </Text>
-          <View style={styles.listCount}>
-            <Text style={styles.listCountText}>{visibleTasks.length}</Text>
-          </View>
-        </View>
-
         <View style={styles.sortControl}>
           {SORT_KEYS.map((option) => {
             const active = sortKey === option.value;
@@ -306,7 +289,7 @@ export default function TaskListScreen() {
           </Pressable>
         </View>
       </View>
-      // Only surfaced while a category filter is on
+      {/*  Only surfaced while a category filter is on */}
       {activeCategoryName ? (
         <View style={styles.activeFilter}>
           <Ionicons name="pricetag" size={12} color={Colors.primaryDark} />
@@ -367,10 +350,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     gap: Spacing.md,
+    paddingBottom: 10,
   },
   sectionHeaderText: {
     flex: 1,
-    gap: 2,
+    gap: 3,
   },
   eyebrow: {
     fontFamily: AppFonts.bodyMedium,
@@ -393,6 +377,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     borderWidth: 1,
     borderColor: Colors.border,
+    marginTop: 6,
+    marginBottom: 12,
   },
   searchInput: {
     flex: 1,
@@ -407,36 +393,9 @@ const styles = StyleSheet.create({
   listControls: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     gap: Spacing.sm,
     marginTop: Spacing.xs,
-  },
-  listHeading: {
-    flexShrink: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 7,
-  },
-  listTitle: {
-    flexShrink: 1,
-    fontFamily: AppFonts.headingBold,
-    fontSize: 19,
-    color: Colors.text,
-    letterSpacing: 0.2,
-  },
-  listCount: {
-    minWidth: 22,
-    height: 22,
-    paddingHorizontal: 6,
-    borderRadius: Radius.pill,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Colors.primaryMuted,
-  },
-  listCountText: {
-    fontFamily: AppFonts.bodyBold,
-    fontSize: 12,
-    color: Colors.primaryDark,
   },
   sortControl: {
     flexDirection: "row",

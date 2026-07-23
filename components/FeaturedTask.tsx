@@ -1,7 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { resolveCategoryColor, Colors } from "@/components/colors";
+import { Colors, resolveCategoryColor } from "@/components/colors";
 import { IconTile } from "@/components/customs/IconTile";
 import { MetaPill } from "@/components/customs/MetaPill";
 import { StatusChip } from "@/components/customs/StatusChip";
@@ -18,11 +18,7 @@ type FeaturedTaskProps = {
   onPress: (id: string) => void;
 };
 
-export function FeaturedTask({
-  task,
-  category,
-  onPress,
-}: FeaturedTaskProps) {
+export function FeaturedTask({ task, category, onPress }: FeaturedTaskProps) {
   const isDone = task.status === "done";
   const status = taskStatusMeta(task);
   const { fg } = resolveCategoryColor(category);
@@ -84,7 +80,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.primaryMuted,
     borderRadius: Radius.lg,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: Colors.primary,
     padding: Spacing.md,
     gap: Spacing.md,

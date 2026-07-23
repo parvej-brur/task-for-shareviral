@@ -5,7 +5,7 @@ import { Colors } from "@/components/colors";
 import { AppFonts } from "@/components/fonts";
 import type { SyncStatus } from "@/contexts/tasksReducer";
 import { formatRelativeTime } from "@/core/date";
-import { Radius, Spacing } from "@/styles/layout";
+import { Radius } from "@/styles/layout";
 
 type SyncStatusBarProps = {
   isOffline: boolean;
@@ -70,8 +70,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 7,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 7,
     borderRadius: Radius.sm,
     backgroundColor: Colors.surfaceMuted,
     alignSelf: "flex-start",
