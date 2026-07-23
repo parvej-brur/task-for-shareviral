@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
+import { Colors, suggestCategoryColor } from '@/components/colors';
 import { Button } from '@/components/customs/Button';
+import { ColorSwatchPicker } from '@/components/customs/ColorSwatchPicker';
 import { FieldGroup } from '@/components/customs/FieldGroup';
 import { FilterChip } from '@/components/customs/FilterChip';
 import { TextField } from '@/components/customs/TextField';
 import { validateTaskForm, type TaskFormValues } from '@/components/validators/taskForm';
 import { common } from '@/styles/common';
-import { Spacing } from '@/styles/layout';
-import type { Category } from '@/types/task';
+import { Radius, Spacing } from '@/styles/layout';
+import type { Category, CategoryColorId, NewCategory } from '@/types/task';
 
 type TaskFormProps = {
   categories: Category[];
@@ -17,6 +20,7 @@ type TaskFormProps = {
   submitIcon?: 'add' | 'checkmark';
   submitting?: boolean;
   onSubmit: (values: TaskFormValues) => void;
+  onCreateCategory?: (input: NewCategory) => Promise<Category>;
 };
 
 type DuePreset = {
@@ -54,12 +58,55 @@ export function TaskForm({
   submitIcon,
   submitting,
   onSubmit,
+  onCreateCategory,
 }: TaskFormProps) {
   const [title, setTitle] = useState(initialValues?.title ?? '');
   const [description, setDescription] = useState(initialValues?.description ?? '');
   const [categoryId, setCategoryId] = useState<string | null>(initialValues?.categoryId ?? null);
   const [dueDate, setDueDate] = useState<string | null>(initialValues?.dueDate ?? null);
   const [titleError, setTitleError] = useState<string | null>(null);
+
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryColor, setNewCategoryColor] = useState<CategoryColorId>(() =>
+    suggestCategoryColor(categories),
+  );
+  const [creatingCategory, setCreatingCategory] = useState(false);
+
+  function openNewCategoryForm() {
+    setNewCategoryColor(suggestCategoryColor(categories));
+    setIsAddingCategory(true);
+  }
+
+  function closeNewCategoryForm() {
+    setIsAddingCategory(false);
+    setNewCategoryName('');
+  }
+
+  async function handleCreateCategory() {
+    const trimmed = newCategoryName.trim();
+    if (trimmed.length === 0 || !onCreateCategory) return;
+
+    const exists = categories.some(
+      (category) => category.name.toLowerCase() === trimmed.toLowerCase(),
+    );
+    if (exists) {
+      Toast.show({ type: 'error', text1: 'That category already exists' });
+      return;
+    }
+
+    setCreatingCategory(true);
+    try {
+      const created = await onCreateCategory({ name: trimmed, color: newCategoryColor });
+      setCategoryId(created.id);
+      closeNewCategoryForm();
+      Toast.show({ type: 'success', text1: 'Category added' });
+    } catch {
+      Toast.show({ type: 'error', text1: 'Couldn’t add category' });
+    } finally {
+      setCreatingCategory(false);
+    }
+  }
 
   const handleSubmit = () => {
     const errors = validateTaskForm({ title });
@@ -107,7 +154,42 @@ export function TaskForm({
                 onPress={() => setCategoryId(category.id)}
               />
             ))}
+            {onCreateCategory && !isAddingCategory ? (
+              <FilterChip label="+ New" selected={false} onPress={openNewCategoryForm} />
+            ) : null}
           </View>
+
+          {isAddingCategory ? (
+            <View style={styles.newCategoryCard}>
+              <TextField
+                label="New category name"
+                placeholder="e.g. Marketing"
+                value={newCategoryName}
+                onChangeText={setNewCategoryName}
+                returnKeyType="done"
+                autoFocus
+              />
+              <ColorSwatchPicker value={newCategoryColor} onChange={setNewCategoryColor} />
+              <View style={styles.newCategoryActions}>
+                <Button
+                  label="Cancel"
+                  variant="ghost"
+                  size="sm"
+                  onPress={closeNewCategoryForm}
+                  disabled={creatingCategory}
+                  style={styles.newCategoryActionHalf}
+                />
+                <Button
+                  label="Add category"
+                  size="sm"
+                  onPress={handleCreateCategory}
+                  disabled={newCategoryName.trim().length === 0}
+                  loading={creatingCategory}
+                  style={styles.newCategoryActionHalf}
+                />
+              </View>
+            </View>
+          ) : null}
         </FieldGroup>
 
         <FieldGroup label="Due date">
@@ -159,6 +241,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.sm,
+  },
+  newCategoryCard: {
+    gap: Spacing.md,
+    marginTop: Spacing.sm,
+    padding: Spacing.md,
+    borderRadius: Radius.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    backgroundColor: Colors.surface,
+  },
+  newCategoryActions: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  newCategoryActionHalf: {
+    flex: 1,
   },
   footer: {
     paddingHorizontal: Spacing.lg,

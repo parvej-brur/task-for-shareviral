@@ -9,7 +9,7 @@ import type { NewTask } from '@/types/task';
 
 export default function EditTaskScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { tasks, categories, updateTask } = useTasks();
+  const { tasks, categories, updateTask, createCategory } = useTasks();
   const [submitting, setSubmitting] = useState(false);
 
   const task = tasks.find((item) => item.id === id);
@@ -54,6 +54,7 @@ export default function EditTaskScreen() {
       submitIcon="checkmark"
       submitting={submitting}
       onSubmit={handleSubmit}
+      onCreateCategory={createCategory}
     />
   );
 }

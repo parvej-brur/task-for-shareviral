@@ -1,21 +1,24 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
-import { Colors } from '@/components/colors';
+import { Colors, suggestCategoryColor } from '@/components/colors';
+import { ColorSwatchPicker } from '@/components/customs/ColorSwatchPicker';
 import { AppFonts } from '@/components/fonts';
 import { EmptyList } from '@/components/EmptyList';
 import { CategoryListItem } from '@/components/Lists/CategoryListItem';
 import { useTasks } from '@/contexts/TasksProvider';
 import { common } from '@/styles/common';
 import { Radius, Spacing } from '@/styles/layout';
-import type { Category } from '@/types/task';
+import type { Category, CategoryColorId } from '@/types/task';
 
 export default function CategoriesScreen() {
   const { categories, tasks, createCategory } = useTasks();
   const [name, setName] = useState('');
+  const [color, setColor] = useState<CategoryColorId>(() => suggestCategoryColor(categories));
   const [submitting, setSubmitting] = useState(false);
 
   const taskCounts: Record<string, number> = {};
@@ -41,8 +44,9 @@ export default function CategoriesScreen() {
 
     setSubmitting(true);
     try {
-      await createCategory({ name: trimmed });
+      const created = await createCategory({ name: trimmed, color });
       setName('');
+      setColor(suggestCategoryColor([...categories, created]));
       Toast.show({ type: 'success', text1: 'Category added' });
     } catch {
       Toast.show({ type: 'error', text1: 'Couldn’t add category' });
@@ -51,8 +55,18 @@ export default function CategoriesScreen() {
     }
   }
 
+  function handlePressCategory(category: Category) {
+    router.push({ pathname: '/category/[id]', params: { id: category.id } });
+  }
+
   function renderItem({ item }: { item: Category }) {
-    return <CategoryListItem category={item} taskCount={taskCounts[item.id] ?? 0} />;
+    return (
+      <CategoryListItem
+        category={item}
+        taskCount={taskCounts[item.id] ?? 0}
+        onPress={handlePressCategory}
+      />
+    );
   }
 
   return (
@@ -88,6 +102,11 @@ export default function CategoriesScreen() {
           ]}>
           <Ionicons name="add" size={26} color="#fff" />
         </Pressable>
+      </View>
+
+      <View style={styles.colorRow}>
+        <Text style={styles.colorLabel}>Colour</Text>
+        <ColorSwatchPicker value={color} onChange={setColor} />
       </View>
 
       <FlatList
@@ -135,6 +154,18 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     paddingHorizontal: Spacing.lg,
     marginTop: Spacing.lg,
+  },
+  colorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    marginTop: Spacing.md,
+  },
+  colorLabel: {
+    fontFamily: AppFonts.bodyMedium,
+    fontSize: 13,
+    color: Colors.textMuted,
   },
   inputWrap: {
     flex: 1,

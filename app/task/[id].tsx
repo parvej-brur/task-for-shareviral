@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
-import { categoryColor, Colors } from '@/components/colors';
+import { resolveCategoryColor, Colors } from '@/components/colors';
 import { AppFonts } from '@/components/fonts';
 import { EmptyList } from '@/components/EmptyList';
 import { Card } from '@/components/Containers/Card';
@@ -24,7 +24,7 @@ export default function TaskDetailScreen() {
   const [busy, setBusy] = useState(false);
 
   const task = tasks.find((item) => item.id === id);
-  const categoryName = categories.find((category) => category.id === task?.categoryId)?.name;
+  const category = categories.find((item) => item.id === task?.categoryId);
 
   async function handleToggleComplete() {
     if (!task) return;
@@ -78,7 +78,7 @@ export default function TaskDetailScreen() {
 
   const isDone = task.status === 'done';
   const statusMeta = taskStatusMeta(task);
-  const { bg, fg } = categoryColor(task.categoryId);
+  const { bg, fg } = resolveCategoryColor(category);
 
   return (
     <ScrollView
@@ -90,7 +90,7 @@ export default function TaskDetailScreen() {
       <Card>
         <View style={styles.heroRow}>
           <IconTile
-            icon={categoryName ? 'pricetag' : 'ellipse-outline'}
+            icon={category ? 'pricetag' : 'ellipse-outline'}
             color={fg}
             background={bg}
             size={56}
@@ -118,8 +118,15 @@ export default function TaskDetailScreen() {
 
         <View style={styles.metaList}>
           <MetaRow icon="pricetag-outline" label="Category">
-            {categoryName ? (
-              <Tag label={categoryName} colorKey={task.categoryId} />
+            {category ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Open ${category.name} category`}
+                onPress={() =>
+                  router.push({ pathname: '/category/[id]', params: { id: category.id } })
+                }>
+                <Tag category={category} />
+              </Pressable>
             ) : (
               <Text style={styles.metaValueMuted}>None</Text>
             )}

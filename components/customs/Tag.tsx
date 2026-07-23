@@ -6,22 +6,22 @@ import {
   type ViewStyle,
 } from "react-native";
 
-import { categoryColor } from "@/components/colors";
+import { resolveCategoryColor } from "@/components/colors";
 import { AppFonts } from "@/components/fonts";
 import { Radius } from "@/styles/layout";
+import type { Category } from "@/types/task";
 
 type TagProps = {
-  label: string;
-  colorKey?: string | null;
+  category: Category;
   style?: StyleProp<ViewStyle>;
 };
 
-export function Tag({ label, colorKey, style }: TagProps) {
-  const { fg } = categoryColor(colorKey);
+export function Tag({ category, style }: TagProps) {
+  const { fg } = resolveCategoryColor(category);
   return (
     <View style={[styles.tag, { backgroundColor: fg }, style]}>
       <Text numberOfLines={1} style={styles.label}>
-        {label}
+        {category.name}
       </Text>
     </View>
   );

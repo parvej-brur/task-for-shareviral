@@ -1,7 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { categoryColor, Colors } from "@/components/colors";
+import { resolveCategoryColor, Colors } from "@/components/colors";
 import { IconTile } from "@/components/customs/IconTile";
 import { MetaPill } from "@/components/customs/MetaPill";
 import { StatusChip } from "@/components/customs/StatusChip";
@@ -10,22 +10,22 @@ import { taskStatusMeta } from "@/components/customs/taskStatus";
 import { AppFonts } from "@/components/fonts";
 import { formatDate } from "@/core/date";
 import { Radius, Shadow, Spacing } from "@/styles/layout";
-import type { Task } from "@/types/task";
+import type { Category, Task } from "@/types/task";
 
 type FeaturedTaskProps = {
   task: Task;
-  categoryName?: string;
+  category?: Category;
   onPress: (id: string) => void;
 };
 
 export function FeaturedTask({
   task,
-  categoryName,
+  category,
   onPress,
 }: FeaturedTaskProps) {
   const isDone = task.status === "done";
   const status = taskStatusMeta(task);
-  const { fg } = categoryColor(task.categoryId);
+  const { fg } = resolveCategoryColor(category);
 
   return (
     <Pressable
@@ -51,7 +51,7 @@ export function FeaturedTask({
 
       <View style={styles.body}>
         <IconTile
-          icon={categoryName ? "pricetag" : "ellipse-outline"}
+          icon={category ? "pricetag" : "ellipse-outline"}
           color={fg}
           background={Colors.surface}
           size={52}
@@ -65,9 +65,7 @@ export function FeaturedTask({
             {task.title}
           </Text>
           <View style={styles.metaRow}>
-            {categoryName ? (
-              <Tag label={categoryName} colorKey={task.categoryId} />
-            ) : null}
+            {category ? <Tag category={category} /> : null}
             <MetaPill
               icon="calendar-outline"
               label={task.dueDate ? formatDate(task.dueDate) : "No due date"}

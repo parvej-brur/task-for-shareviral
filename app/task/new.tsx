@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import Toast from 'react-native-toast-message';
 
@@ -7,7 +7,8 @@ import { useTasks } from '@/contexts/TasksProvider';
 import type { NewTask } from '@/types/task';
 
 export default function NewTaskScreen() {
-  const { categories, createTask } = useTasks();
+  const { categoryId: presetCategoryId } = useLocalSearchParams<{ categoryId?: string }>();
+  const { categories, createTask, createCategory } = useTasks();
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(values: NewTask) {
@@ -32,10 +33,12 @@ export default function NewTaskScreen() {
   return (
     <TaskForm
       categories={categories}
+      initialValues={presetCategoryId ? { categoryId: presetCategoryId } : undefined}
       submitLabel="Create task"
       submitIcon="add"
       submitting={submitting}
       onSubmit={handleSubmit}
+      onCreateCategory={createCategory}
     />
   );
 }

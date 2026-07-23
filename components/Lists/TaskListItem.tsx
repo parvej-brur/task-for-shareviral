@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { memo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { categoryColor, Colors } from "@/components/colors";
+import { resolveCategoryColor, Colors } from "@/components/colors";
 import { IconTile } from "@/components/customs/IconTile";
 import { MetaPill } from "@/components/customs/MetaPill";
 import { StatusChip } from "@/components/customs/StatusChip";
@@ -11,11 +11,11 @@ import { taskStatusMeta } from "@/components/customs/taskStatus";
 import { AppFonts } from "@/components/fonts";
 import { formatDate } from "@/core/date";
 import { Radius, Shadow, Spacing } from "@/styles/layout";
-import type { Task } from "@/types/task";
+import type { Category, Task } from "@/types/task";
 
 type TaskListItemProps = {
   task: Task;
-  categoryName?: string;
+  category?: Category;
   onPress: (id: string) => void;
   onToggleComplete: (task: Task) => void;
   onToggleStar: (id: string) => void;
@@ -23,14 +23,14 @@ type TaskListItemProps = {
 
 function TaskListItemComponent({
   task,
-  categoryName,
+  category,
   onPress,
   onToggleComplete,
   onToggleStar,
 }: TaskListItemProps) {
   const isDone = task.status === "done";
   const status = taskStatusMeta(task);
-  const { bg, fg } = categoryColor(task.categoryId);
+  const { bg, fg } = resolveCategoryColor(category);
 
   return (
     <Pressable
@@ -40,7 +40,7 @@ function TaskListItemComponent({
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
     >
       <IconTile
-        icon={categoryName ? "pricetag" : "ellipse-outline"}
+        icon={category ? "pricetag" : "ellipse-outline"}
         color={fg}
         background={bg}
         done={isDone}
@@ -71,9 +71,7 @@ function TaskListItemComponent({
 
         <View style={styles.metaRow}>
           <View style={styles.metaLeft}>
-            {categoryName ? (
-              <Tag label={categoryName} colorKey={task.categoryId} />
-            ) : null}
+            {category ? <Tag category={category} /> : null}
             <MetaPill
               icon="calendar-outline"
               label={task.dueDate ? formatDate(task.dueDate) : "No due date"}
