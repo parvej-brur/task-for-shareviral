@@ -1,24 +1,33 @@
-import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
+import { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  type TextInputProps,
+} from "react-native";
 
-import { Colors } from '@/components/colors';
-import { AppFonts } from '@/components/fonts';
-import { Radius, Spacing } from '@/styles/layout';
+import { Colors } from "@/components/colors";
+import { AppFonts } from "@/components/fonts";
+import { Radius, Spacing } from "@/styles/layout";
 
 type TextFieldProps = TextInputProps & {
   label: string;
   error?: string | null;
   hint?: string;
-  /** Adds a taller box for descriptions. */
   multilineBox?: boolean;
 };
 
-/**
- * A labelled text input with focus and error states. Owns its label/error
- * chrome so forms stay consistent and screens don't re-implement the same
- * bordered box each time.
- */
-export function TextField({ label, error, hint, multilineBox, style, onFocus, onBlur, ...rest }: TextFieldProps) {
+export function TextField({
+  label,
+  error,
+  hint,
+  multilineBox,
+  style,
+  onFocus,
+  onBlur,
+  ...rest
+}: TextFieldProps) {
   const [focused, setFocused] = useState(false);
 
   return (
@@ -60,7 +69,7 @@ const styles = StyleSheet.create({
     fontFamily: AppFonts.headingSemiBold,
     fontSize: 13,
     letterSpacing: 0.3,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     color: Colors.textMuted,
   },
   input: {
