@@ -1,8 +1,8 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { Colors } from '@/components/colors';
-import { AppFonts } from '@/components/fonts';
-import { Radius, Spacing } from '@/styles/layout';
+import { Colors } from "@/components/colors";
+import { AppFonts } from "@/components/fonts";
+import { Radius, Spacing } from "@/styles/layout";
 
 export type Segment<T extends string> = {
   key: T;
@@ -16,11 +16,6 @@ type SegmentedFilterProps<T extends string> = {
   onChange: (key: T) => void;
 };
 
-/**
- * Status filter bar. Scrolls horizontally rather than dividing the width into
- * fixed columns, so a long category name or a narrow screen doesn't squash the
- * labels.
- */
 export function SegmentedFilter<T extends string>({
   segments,
   value,
@@ -30,7 +25,8 @@ export function SegmentedFilter<T extends string>({
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.row}>
+      contentContainerStyle={styles.row}
+    >
       {segments.map((segment) => {
         const active = segment.key === value;
         return (
@@ -44,12 +40,28 @@ export function SegmentedFilter<T extends string>({
               styles.segment,
               active ? styles.segmentActive : styles.segmentIdle,
               pressed && styles.pressed,
-            ]}>
-            <Text style={[styles.label, active ? styles.labelActive : styles.labelIdle]}>
+            ]}
+          >
+            <Text
+              style={[
+                styles.label,
+                active ? styles.labelActive : styles.labelIdle,
+              ]}
+            >
               {segment.label}
             </Text>
-            <View style={[styles.badge, active ? styles.badgeActive : styles.badgeIdle]}>
-              <Text style={[styles.count, active ? styles.countActive : styles.countIdle]}>
+            <View
+              style={[
+                styles.badge,
+                active ? styles.badgeActive : styles.badgeIdle,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.count,
+                  active ? styles.countActive : styles.countIdle,
+                ]}
+              >
                 {segment.count}
               </Text>
             </View>
@@ -62,13 +74,13 @@ export function SegmentedFilter<T extends string>({
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: Spacing.sm,
     paddingHorizontal: Spacing.lg,
   },
   segment: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 7,
     height: 38,
     paddingHorizontal: Spacing.md,
@@ -95,21 +107,21 @@ const styles = StyleSheet.create({
   },
   labelActive: {
     fontFamily: AppFonts.bodyBold,
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
   badge: {
     minWidth: 20,
     height: 20,
     paddingHorizontal: 6,
     borderRadius: Radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   badgeIdle: {
     backgroundColor: Colors.surfaceMuted,
   },
   badgeActive: {
-    backgroundColor: 'rgba(255,255,255,0.24)',
+    backgroundColor: "rgba(255,255,255,0.24)",
   },
   count: {
     fontFamily: AppFonts.bodyBold,
@@ -119,6 +131,6 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
   },
   countActive: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
 });
