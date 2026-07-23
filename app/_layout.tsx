@@ -23,6 +23,9 @@ import "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
+import { AppFonts, Colors } from "@/constants/theme";
+import { TasksProvider } from "@/contexts/TasksProvider";
+
 export const unstable_settings = {
   anchor: "(tabs)",
 };
@@ -60,9 +63,30 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
+      <TasksProvider>
+        <Stack
+          screenOptions={{
+            headerStyle: { backgroundColor: Colors.surface },
+            headerShadowVisible: false,
+            headerTintColor: Colors.primary,
+            headerTitleStyle: {
+              fontFamily: AppFonts.headingSemiBold,
+              fontSize: 17,
+              color: Colors.text,
+            },
+            headerBackButtonDisplayMode: "minimal",
+            contentStyle: { backgroundColor: Colors.background },
+          }}
+        >
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="task/new" options={{ title: "New task" }} />
+          <Stack.Screen name="task/[id]" options={{ title: "Task details" }} />
+          <Stack.Screen
+            name="task/edit/[id]"
+            options={{ title: "Edit task", presentation: "modal" }}
+          />
+        </Stack>
+      </TasksProvider>
       <StatusBar style="dark" />
       <Toast topOffset={insets.top + 5} />
     </ThemeProvider>
