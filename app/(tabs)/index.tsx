@@ -1,6 +1,6 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { router } from 'expo-router';
-import { useState } from 'react';
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { router } from "expo-router";
+import { useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -9,36 +9,39 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Toast from 'react-native-toast-message';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
-import { Colors } from '@/components/colors';
-import { AppFonts } from '@/components/fonts';
-import { EmptyList } from '@/components/EmptyList';
-import { FeaturedTask } from '@/components/FeaturedTask';
-import { FilterDropdown, type FilterOption } from '@/components/FilterDropdown';
-import { SyncStatusBar } from '@/components/SyncStatusBar';
-import { SegmentedFilter, type Segment } from '@/components/customs/SegmentedFilter';
-import { TaskListItem } from '@/components/Lists/TaskListItem';
-import { TaskListSkeleton } from '@/components/Skeletons/TaskRowSkeleton';
-import { useTasks } from '@/contexts/TasksProvider';
+import { Colors } from "@/components/colors";
+import {
+  SegmentedFilter,
+  type Segment,
+} from "@/components/customs/SegmentedFilter";
+import { EmptyList } from "@/components/EmptyList";
+import { FeaturedTask } from "@/components/FeaturedTask";
+import { FilterDropdown, type FilterOption } from "@/components/FilterDropdown";
+import { AppFonts } from "@/components/fonts";
+import { TaskListItem } from "@/components/Lists/TaskListItem";
+import { TaskListSkeleton } from "@/components/Skeletons/TaskRowSkeleton";
+import { SyncStatusBar } from "@/components/SyncStatusBar";
+import { useTasks } from "@/contexts/TasksProvider";
 import {
   countTasksByGroup,
   filtersForGroup,
   selectFeaturedTask,
   selectVisibleTasks,
-} from '@/core/tasks/taskSelectors';
-import { useDebouncedValue } from '@/hooks/useDebouncedValue';
-import { common } from '@/styles/common';
-import { Radius, Shadow, Spacing } from '@/styles/layout';
-import type { Task, TaskGroup, TaskSortKey } from '@/types/task';
+} from "@/core/tasks/taskSelectors";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { common } from "@/styles/common";
+import { Radius, Shadow, Spacing } from "@/styles/layout";
+import type { Task, TaskGroup, TaskSortKey } from "@/types/task";
 
 const GROUP_LABELS: Record<TaskGroup, string> = {
-  all: 'All',
-  todo: 'To Do',
-  inProgress: 'In Progress',
-  done: 'Done',
+  all: "All",
+  todo: "To Do",
+  inProgress: "In Progress",
+  done: "Done",
 };
 
 /**
@@ -47,12 +50,12 @@ const GROUP_LABELS: Record<TaskGroup, string> = {
  */
 const SECTION_TITLES: Record<TaskGroup, string> = {
   ...GROUP_LABELS,
-  all: 'All Tasks',
+  all: "All Tasks",
 };
 
 const SORT_KEYS: { label: string; value: TaskSortKey }[] = [
-  { label: 'Due date', value: 'dueDate' },
-  { label: 'Created', value: 'createdAt' },
+  { label: "Due date", value: "dueDate" },
+  { label: "Created", value: "createdAt" },
 ];
 
 export default function TaskListScreen() {
@@ -68,14 +71,17 @@ export default function TaskListScreen() {
     toggleStarred,
   } = useTasks();
 
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState<string | null>(null);
-  const [group, setGroup] = useState<TaskGroup>('all');
-  const [sortKey, setSortKey] = useState<TaskSortKey>('dueDate');
+  const [group, setGroup] = useState<TaskGroup>("all");
+  const [sortKey, setSortKey] = useState<TaskSortKey>("dueDate");
   const [sortAscending, setSortAscending] = useState(true);
 
   const debouncedSearch = useDebouncedValue(search, 300);
-  const sort = { key: sortKey, direction: sortAscending ? ('asc' as const) : ('desc' as const) };
+  const sort = {
+    key: sortKey,
+    direction: sortAscending ? ("asc" as const) : ("desc" as const),
+  };
 
   const filters = filtersForGroup(group, categoryId, debouncedSearch);
   const visibleTasks = selectVisibleTasks(tasks, filters, sort);
@@ -83,10 +89,14 @@ export default function TaskListScreen() {
   const featured = selectFeaturedTask(tasks);
 
   const segments: Segment<TaskGroup>[] = [
-    { key: 'all', label: GROUP_LABELS.all, count: counts.all },
-    { key: 'todo', label: GROUP_LABELS.todo, count: counts.todo },
-    { key: 'inProgress', label: GROUP_LABELS.inProgress, count: counts.inProgress },
-    { key: 'done', label: GROUP_LABELS.done, count: counts.done },
+    { key: "all", label: GROUP_LABELS.all, count: counts.all },
+    { key: "todo", label: GROUP_LABELS.todo, count: counts.todo },
+    {
+      key: "inProgress",
+      label: GROUP_LABELS.inProgress,
+      count: counts.inProgress,
+    },
+    { key: "done", label: GROUP_LABELS.done, count: counts.done },
   ];
 
   const categoryNames: Record<string, string> = {};
@@ -95,46 +105,52 @@ export default function TaskListScreen() {
   }
 
   const categoryOptions: FilterOption[] = [
-    { label: 'All Categories', value: null },
-    ...categories.map((category) => ({ label: category.name, value: category.id })),
+    { label: "All Categories", value: null },
+    ...categories.map((category) => ({
+      label: category.name,
+      value: category.id,
+    })),
   ];
 
-  const activeCategoryName = categoryId ? categoryNames[categoryId] ?? 'Category' : null;
+  const activeCategoryName = categoryId
+    ? (categoryNames[categoryId] ?? "Category")
+    : null;
 
-  // A stable two-part tally rather than a sentence, so the line keeps the same
-  // shape whatever the numbers are (no "1 tasks", no singular/plural juggling).
+  // A stable two-part tally rather than a sentence
   const summary =
     counts.all === 0
-      ? 'Nothing here yet'
+      ? "Nothing here yet"
       : counts.open === 0
-        ? 'All caught up'
+        ? "All caught up"
         : `${counts.open} open · ${counts.done} done`;
 
-  const isFirstLoad = status === 'refreshing' && tasks.length === 0;
+  const isFirstLoad = status === "refreshing" && tasks.length === 0;
 
   function handlePressTask(id: string) {
-    router.push({ pathname: '/task/[id]', params: { id } });
+    router.push({ pathname: "/task/[id]", params: { id } });
   }
 
   async function handleToggleComplete(task: Task) {
     try {
       await toggleComplete(task);
     } catch {
-      Toast.show({ type: 'error', text1: 'Couldn’t update task' });
+      Toast.show({ type: "error", text1: "Couldn’t update task" });
     }
   }
 
   function clearFilters() {
-    setSearch('');
+    setSearch("");
     setCategoryId(null);
-    setGroup('all');
+    setGroup("all");
   }
 
   function renderItem({ item }: { item: Task }) {
     return (
       <TaskListItem
         task={item}
-        categoryName={item.categoryId ? categoryNames[item.categoryId] : undefined}
+        categoryName={
+          item.categoryId ? categoryNames[item.categoryId] : undefined
+        }
         onPress={handlePressTask}
         onToggleComplete={handleToggleComplete}
         onToggleStar={toggleStarred}
@@ -178,7 +194,7 @@ export default function TaskListScreen() {
         message="Create your first task to get started."
         actionLabel="New task"
         actionIcon="add"
-        onAction={() => router.push('/task/new')}
+        onAction={() => router.push("/task/new")}
       />
     );
   }
@@ -197,15 +213,15 @@ export default function TaskListScreen() {
           accessibilityLabel="Filter by category"
         />
       </View>
-
       {featured ? (
         <FeaturedTask
           task={featured}
-          categoryName={featured.categoryId ? categoryNames[featured.categoryId] : undefined}
+          categoryName={
+            featured.categoryId ? categoryNames[featured.categoryId] : undefined
+          }
           onPress={handlePressTask}
         />
       ) : null}
-
       <View style={styles.searchBar}>
         <Ionicons name="search-outline" size={18} color={Colors.textSubtle} />
         <TextInput
@@ -219,23 +235,28 @@ export default function TaskListScreen() {
           accessibilityLabel="Search tasks by title"
         />
         {search.length > 0 ? (
-          <Pressable onPress={() => setSearch('')} hitSlop={8} accessibilityLabel="Clear search">
+          <Pressable
+            onPress={() => setSearch("")}
+            hitSlop={8}
+            accessibilityLabel="Clear search"
+          >
             <Ionicons name="close-circle" size={18} color={Colors.textSubtle} />
           </Pressable>
         ) : null}
       </View>
-
       <SyncStatusBar
         isOffline={isOffline}
         status={status}
         lastRefreshedAt={lastRefreshedAt}
         error={error}
       />
-
       <View style={styles.fullBleed}>
-        <SegmentedFilter segments={segments} value={group} onChange={setGroup} />
+        <SegmentedFilter
+          segments={segments}
+          value={group}
+          onChange={setGroup}
+        />
       </View>
-
       <View style={styles.listControls}>
         <View style={styles.listHeading}>
           <Text style={styles.listTitle} numberOfLines={1}>
@@ -256,8 +277,14 @@ export default function TaskListScreen() {
                 accessibilityState={{ selected: active }}
                 accessibilityLabel={`Sort by ${option.label.toLowerCase()}`}
                 onPress={() => setSortKey(option.value)}
-                style={[styles.sortKey, active && styles.sortKeyActive]}>
-                <Text style={[styles.sortKeyText, active && styles.sortKeyTextActive]}>
+                style={[styles.sortKey, active && styles.sortKeyActive]}
+              >
+                <Text
+                  style={[
+                    styles.sortKeyText,
+                    active && styles.sortKeyTextActive,
+                  ]}
+                >
                   {option.label}
                 </Text>
               </Pressable>
@@ -266,21 +293,20 @@ export default function TaskListScreen() {
           <Pressable
             onPress={() => setSortAscending((value) => !value)}
             hitSlop={8}
-            accessibilityLabel={sortAscending ? 'Sort descending' : 'Sort ascending'}
-            style={styles.sortDirection}>
+            accessibilityLabel={
+              sortAscending ? "Sort descending" : "Sort ascending"
+            }
+            style={styles.sortDirection}
+          >
             <Ionicons
-              name={sortAscending ? 'arrow-up' : 'arrow-down'}
+              name={sortAscending ? "arrow-up" : "arrow-down"}
               size={15}
               color={Colors.primaryDark}
             />
           </Pressable>
         </View>
       </View>
-
-      {/*
-       * Only surfaced while a category filter is on — an always-present
-       * "All Categories" line just restated the dropdown's default.
-       */}
+      // Only surfaced while a category filter is on
       {activeCategoryName ? (
         <View style={styles.activeFilter}>
           <Ionicons name="pricetag" size={12} color={Colors.primaryDark} />
@@ -293,7 +319,7 @@ export default function TaskListScreen() {
   );
 
   return (
-    <SafeAreaView style={common.screen} edges={['top']}>
+    <SafeAreaView style={common.screen} edges={["top"]}>
       <FlatList
         data={isFirstLoad ? [] : visibleTasks}
         keyExtractor={(item) => item.id}
@@ -304,7 +330,7 @@ export default function TaskListScreen() {
         ListEmptyComponent={renderEmpty()}
         refreshControl={
           <RefreshControl
-            refreshing={status === 'refreshing' && !isFirstLoad}
+            refreshing={status === "refreshing" && !isFirstLoad}
             onRefresh={refresh}
             tintColor={Colors.primary}
           />
@@ -315,9 +341,10 @@ export default function TaskListScreen() {
 
       <Pressable
         style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
-        onPress={() => router.push('/task/new')}
+        onPress={() => router.push("/task/new")}
         accessibilityRole="button"
-        accessibilityLabel="New task">
+        accessibilityLabel="New task"
+      >
         <Ionicons name="add" size={22} color="#fff" />
         <Text style={styles.fabLabel}>New task</Text>
       </Pressable>
@@ -336,9 +363,9 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: Spacing.md,
   },
   sectionHeaderText: {
@@ -357,8 +384,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
     height: 46,
@@ -378,16 +405,16 @@ const styles = StyleSheet.create({
     marginHorizontal: -Spacing.lg,
   },
   listControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: Spacing.sm,
     marginTop: Spacing.xs,
   },
   listHeading: {
     flexShrink: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 7,
   },
   listTitle: {
@@ -402,8 +429,8 @@ const styles = StyleSheet.create({
     height: 22,
     paddingHorizontal: 6,
     borderRadius: Radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: Colors.primaryMuted,
   },
   listCountText: {
@@ -412,8 +439,8 @@ const styles = StyleSheet.create({
     color: Colors.primaryDark,
   },
   sortControl: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 2,
     padding: 3,
     borderRadius: Radius.pill,
@@ -442,16 +469,16 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
     borderRadius: Radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: Colors.surfaceMuted,
   },
   activeFilter: {
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
-    alignItems: 'center',
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
     gap: 5,
-    maxWidth: '70%',
+    maxWidth: "70%",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: Radius.pill,
@@ -473,11 +500,11 @@ const styles = StyleSheet.create({
     height: Spacing.md,
   },
   fab: {
-    position: 'absolute',
+    position: "absolute",
     right: Spacing.lg,
     bottom: Spacing.xl,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     height: 52,
     paddingLeft: Spacing.md,
@@ -492,7 +519,7 @@ const styles = StyleSheet.create({
   fabLabel: {
     fontFamily: AppFonts.headingSemiBold,
     fontSize: 15,
-    color: '#fff',
+    color: "#fff",
     letterSpacing: 0.2,
   },
 });

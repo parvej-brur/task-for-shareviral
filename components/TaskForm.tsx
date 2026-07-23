@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
-import { Colors } from '@/components/colors';
 import { Button } from '@/components/customs/Button';
 import { FieldGroup } from '@/components/customs/FieldGroup';
 import { FilterChip } from '@/components/customs/FilterChip';
@@ -165,8 +164,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.xl,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    backgroundColor: Colors.surface,
   },
 });
