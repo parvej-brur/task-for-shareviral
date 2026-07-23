@@ -1,30 +1,33 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Text, View } from 'react-native';
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { StyleSheet, Text, View } from "react-native";
 
-import { Colors } from '@/components/colors';
-import { AppFonts } from '@/components/fonts';
+import { Colors } from "@/components/colors";
+import { AppFonts } from "@/components/fonts";
 
 type MetaPillProps = {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
-  /** Accent used for the icon and its soft circular background. */
   color?: string;
   tint?: string;
   muted?: boolean;
 };
 
-/**
- * A metadata unit: a small icon in a soft circular chip followed by a label —
- * the calendar/clock pattern from the reference's card footer. Used for due
- * date, created date and similar inline facts so they align consistently.
- */
-export function MetaPill({ icon, label, color = Colors.accent, tint, muted }: MetaPillProps) {
+export function MetaPill({
+  icon,
+  label,
+  color = Colors.accent,
+  tint,
+  muted,
+}: MetaPillProps) {
   return (
     <View style={styles.row}>
       <View style={[styles.badge, { backgroundColor: tint ?? `${color}1A` }]}>
         <Ionicons name={icon} size={12} color={color} />
       </View>
-      <Text numberOfLines={1} style={[styles.label, muted && styles.labelMuted]}>
+      <Text
+        numberOfLines={1}
+        style={[styles.label, muted && styles.labelMuted]}
+      >
         {label}
       </Text>
     </View>
@@ -33,8 +36,8 @@ export function MetaPill({ icon, label, color = Colors.accent, tint, muted }: Me
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     flexShrink: 1,
   },
@@ -42,8 +45,8 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   label: {
     fontFamily: AppFonts.bodyMedium,
