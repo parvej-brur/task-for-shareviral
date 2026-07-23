@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   ActivityIndicator,
   Pressable,
@@ -7,14 +7,14 @@ import {
   View,
   type StyleProp,
   type ViewStyle,
-} from 'react-native';
+} from "react-native";
 
-import { Colors } from '@/components/colors';
-import { AppFonts } from '@/components/fonts';
-import { Radius, Spacing } from '@/styles/layout';
+import { Colors } from "@/components/colors";
+import { AppFonts } from "@/components/fonts";
+import { Radius, Spacing } from "@/styles/layout";
 
-type ButtonVariant = 'primary' | 'danger' | 'ghost';
-type ButtonSize = 'md' | 'sm';
+type ButtonVariant = "primary" | "danger" | "ghost";
+type ButtonSize = "md" | "sm";
 
 type ButtonProps = {
   label: string;
@@ -29,17 +29,16 @@ type ButtonProps = {
 };
 
 const FOREGROUND: Record<ButtonVariant, string> = {
-  primary: '#FFFFFF',
+  primary: "#FFFFFF",
   danger: Colors.danger,
   ghost: Colors.text,
 };
 
-/** The single button primitive — solid primary, destructive, and quiet ghost. */
 export function Button({
   label,
   onPress,
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   icon,
   disabled,
   loading,
@@ -58,23 +57,31 @@ export function Button({
       disabled={isDisabled}
       style={({ pressed }) => [
         styles.base,
-        size === 'sm' && styles.sizeSm,
+        size === "sm" && styles.sizeSm,
         styles[variant],
         isDisabled && styles.disabled,
         pressed && !isDisabled && styles.pressed,
         style,
-      ]}>
+      ]}
+    >
       {loading ? (
         <ActivityIndicator color={foreground} />
       ) : (
         <View style={styles.content}>
-          {icon ? <Ionicons name={icon} size={size === 'sm' ? 16 : 18} color={foreground} /> : null}
+          {icon ? (
+            <Ionicons
+              name={icon}
+              size={size === "sm" ? 16 : 18}
+              color={foreground}
+            />
+          ) : null}
           <Text
             style={[
               styles.label,
-              size === 'sm' && styles.labelSm,
+              size === "sm" && styles.labelSm,
               { color: foreground },
-            ]}>
+            ]}
+          >
             {label}
           </Text>
         </View>
@@ -87,8 +94,8 @@ const styles = StyleSheet.create({
   base: {
     minHeight: 52,
     borderRadius: Radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: Spacing.xl,
   },
   sizeSm: {
@@ -97,8 +104,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   content: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: Spacing.sm,
   },
   primary: {
