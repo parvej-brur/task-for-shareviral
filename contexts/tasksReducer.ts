@@ -89,8 +89,6 @@ export function tasksReducer(
       return { ...state, categories };
     }
 
-    // Mirrors the backend FK's `on delete set null`: tasks in this category
-    // are uncategorised, not removed.
     case "category/remove":
       return {
         ...state,

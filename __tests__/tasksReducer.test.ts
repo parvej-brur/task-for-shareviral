@@ -1,19 +1,23 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { initialTasksState, tasksReducer, type TasksState } from '@/contexts/tasksReducer';
-import type { RemoteTask } from '@/types/task';
+import type { Category, RemoteTask } from '@/types/task';
 
-function makeRemoteTask(id: string): RemoteTask {
+function makeRemoteTask(id: string, categoryId: string | null = null): RemoteTask {
   return {
     id,
     title: `Task ${id}`,
     description: '',
-    categoryId: null,
+    categoryId,
     status: 'open',
     dueDate: null,
     createdAt: '2026-07-01T00:00:00.000Z',
     updatedAt: '2026-07-01T00:00:00.000Z',
   };
+}
+
+function makeCategory(id: string): Category {
+  return { id, name: `Category ${id}`, color: null, createdAt: '2026-07-01T00:00:00.000Z' };
 }
 
 const cachedState: TasksState = {
@@ -71,5 +75,19 @@ describe('tasksReducer', () => {
 
     const appended = tasksReducer(updated, { type: 'task/upsert', task: makeRemoteTask('c') });
     expect(appended.remoteTasks.map((task) => task.id)).toEqual(['a', 'c']);
+  });
+
+  it('removes a category and uncategorises its tasks, mirroring the backend FK', () => {
+    const withCategory: TasksState = {
+      ...cachedState,
+      remoteTasks: [makeRemoteTask('a', 'cat-1'), makeRemoteTask('b', 'cat-2')],
+      categories: [makeCategory('cat-1'), makeCategory('cat-2')],
+    };
+
+    const next = tasksReducer(withCategory, { type: 'category/remove', id: 'cat-1' });
+
+    expect(next.categories.map((category) => category.id)).toEqual(['cat-2']);
+    expect(next.remoteTasks.find((task) => task.id === 'a')?.categoryId).toBeNull();
+    expect(next.remoteTasks.find((task) => task.id === 'b')?.categoryId).toBe('cat-2');
   });
 });
