@@ -1,11 +1,11 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
-import { Colors } from '@/components/colors';
-import { AppFonts } from '@/components/fonts';
-import type { SyncStatus } from '@/contexts/tasksReducer';
-import { formatRelativeTime } from '@/core/date';
-import { Radius, Spacing } from '@/styles/layout';
+import { Colors } from "@/components/colors";
+import { AppFonts } from "@/components/fonts";
+import type { SyncStatus } from "@/contexts/tasksReducer";
+import { formatRelativeTime } from "@/core/date";
+import { Radius, Spacing } from "@/styles/layout";
 
 type SyncStatusBarProps = {
   isOffline: boolean;
@@ -14,22 +14,28 @@ type SyncStatusBarProps = {
   error: string | null;
 };
 
-/**
- * A single quiet line reflecting sync state: offline / refreshing / error /
- * last-synced. Neutral by default so it never competes with the list; only the
- * offline and error states pick up colour.
- */
-export function SyncStatusBar({ isOffline, status, lastRefreshedAt, error }: SyncStatusBarProps) {
+export function SyncStatusBar({
+  isOffline,
+  status,
+  lastRefreshedAt,
+  error,
+}: SyncStatusBarProps) {
   if (isOffline) {
     return (
       <View style={[styles.bar, styles.offline]}>
-        <Ionicons name="cloud-offline-outline" size={15} color={Colors.warning} />
-        <Text style={[styles.text, { color: Colors.warning }]}>Offline — showing saved tasks</Text>
+        <Ionicons
+          name="cloud-offline-outline"
+          size={15}
+          color={Colors.warning}
+        />
+        <Text style={[styles.text, { color: Colors.warning }]}>
+          Offline — showing saved tasks
+        </Text>
       </View>
     );
   }
 
-  if (status === 'refreshing') {
+  if (status === "refreshing") {
     return (
       <View style={styles.bar}>
         <ActivityIndicator size="small" color={Colors.textMuted} />
@@ -51,7 +57,9 @@ export function SyncStatusBar({ isOffline, status, lastRefreshedAt, error }: Syn
     <View style={styles.bar}>
       <Ionicons name="cloud-done-outline" size={15} color={Colors.textMuted} />
       <Text style={styles.text}>
-        {lastRefreshedAt ? `Synced ${formatRelativeTime(lastRefreshedAt)}` : 'Not synced yet'}
+        {lastRefreshedAt
+          ? `Synced ${formatRelativeTime(lastRefreshedAt)}`
+          : "Not synced yet"}
       </Text>
     </View>
   );
@@ -59,21 +67,21 @@ export function SyncStatusBar({ isOffline, status, lastRefreshedAt, error }: Syn
 
 const styles = StyleSheet.create({
   bar: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 7,
     paddingHorizontal: Spacing.md,
     paddingVertical: 7,
     borderRadius: Radius.sm,
     backgroundColor: Colors.surfaceMuted,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
   },
   offline: {
     backgroundColor: Colors.warningMuted,
   },
   error: {
     backgroundColor: Colors.dangerMuted,
-    alignSelf: 'stretch',
+    alignSelf: "stretch",
   },
   text: {
     fontFamily: AppFonts.bodyMedium,
