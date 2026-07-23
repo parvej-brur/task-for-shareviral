@@ -23,6 +23,7 @@ export type TasksAction =
   | { type: "task/upsert"; task: RemoteTask }
   | { type: "task/remove"; id: string }
   | { type: "category/upsert"; category: Category }
+  | { type: "category/remove"; id: string }
   | { type: "starred/toggle"; id: string };
 
 export const initialTasksState: TasksState = {
@@ -87,6 +88,19 @@ export function tasksReducer(
         : [...state.categories, action.category];
       return { ...state, categories };
     }
+
+    // Mirrors the backend FK's `on delete set null`: tasks in this category
+    // are uncategorised, not removed.
+    case "category/remove":
+      return {
+        ...state,
+        categories: state.categories.filter(
+          (category) => category.id !== action.id,
+        ),
+        remoteTasks: state.remoteTasks.map((task) =>
+          task.categoryId === action.id ? { ...task, categoryId: null } : task,
+        ),
+      };
 
     case "starred/toggle": {
       const starredIds = state.starredIds.includes(action.id)

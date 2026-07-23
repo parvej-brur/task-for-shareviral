@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
@@ -16,7 +16,7 @@ import { Radius, Spacing } from '@/styles/layout';
 import type { Category, CategoryColorId } from '@/types/task';
 
 export default function CategoriesScreen() {
-  const { categories, tasks, createCategory } = useTasks();
+  const { categories, tasks, createCategory, deleteCategory } = useTasks();
   const [name, setName] = useState('');
   const [color, setColor] = useState<CategoryColorId>(() => suggestCategoryColor(categories));
   const [submitting, setSubmitting] = useState(false);
@@ -59,12 +59,37 @@ export default function CategoriesScreen() {
     router.push({ pathname: '/category/[id]', params: { id: category.id } });
   }
 
+  function handleDeleteCategory(category: Category) {
+    const count = taskCounts[category.id] ?? 0;
+    const message =
+      count > 0
+        ? `Delete “${category.name}”? ${count} task${count === 1 ? '' : 's'} will become uncategorised.`
+        : `Delete “${category.name}”? This can’t be undone.`;
+
+    Alert.alert('Delete category', message, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteCategory(category.id);
+            Toast.show({ type: 'success', text1: 'Category deleted' });
+          } catch {
+            Toast.show({ type: 'error', text1: 'Couldn’t delete category' });
+          }
+        },
+      },
+    ]);
+  }
+
   function renderItem({ item }: { item: Category }) {
     return (
       <CategoryListItem
         category={item}
         taskCount={taskCounts[item.id] ?? 0}
         onPress={handlePressCategory}
+        onDelete={handleDeleteCategory}
       />
     );
   }

@@ -124,4 +124,20 @@ export class MockTaskRepository implements TaskRepository {
     store.write(KEYS.categories, [...this.readCategories(), category]);
     return category;
   }
+
+  async deleteCategory(id: string): Promise<void> {
+    await simulateRequest();
+    store.write(
+      KEYS.categories,
+      this.readCategories().filter((category) => category.id !== id),
+    );
+    // Mirrors the Supabase FK's `on delete set null`: tasks in this category
+    // are uncategorised, not deleted.
+    store.write(
+      KEYS.tasks,
+      this.readTasks().map((task) =>
+        task.categoryId === id ? { ...task, categoryId: null } : task,
+      ),
+    );
+  }
 }

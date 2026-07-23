@@ -1,43 +1,46 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import Toast from 'react-native-toast-message';
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useState } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import Toast from "react-native-toast-message";
 
-import { resolveCategoryColor, Colors } from '@/components/colors';
-import { SegmentedFilter, type Segment } from '@/components/customs/SegmentedFilter';
-import { IconTile } from '@/components/customs/IconTile';
-import { EmptyList } from '@/components/EmptyList';
-import { AppFonts } from '@/components/fonts';
-import { TaskListItem } from '@/components/Lists/TaskListItem';
-import { useTasks } from '@/contexts/TasksProvider';
+import { Colors, resolveCategoryColor } from "@/components/colors";
+import { IconTile } from "@/components/customs/IconTile";
+import {
+  SegmentedFilter,
+  type Segment,
+} from "@/components/customs/SegmentedFilter";
+import { EmptyList } from "@/components/EmptyList";
+import { AppFonts } from "@/components/fonts";
+import { TaskListItem } from "@/components/Lists/TaskListItem";
+import { useTasks } from "@/contexts/TasksProvider";
 import {
   countTasksByGroup,
   filtersForGroup,
   selectVisibleTasks,
-} from '@/core/tasks/taskSelectors';
-import { common } from '@/styles/common';
-import { Radius, Shadow, Spacing } from '@/styles/layout';
-import type { Task, TaskGroup } from '@/types/task';
+} from "@/core/tasks/taskSelectors";
+import { common } from "@/styles/common";
+import { Radius, Shadow, Spacing } from "@/styles/layout";
+import type { Task, TaskGroup } from "@/types/task";
 
 const GROUP_LABELS: Record<TaskGroup, string> = {
-  all: 'All',
-  todo: 'To Do',
-  inProgress: 'In Progress',
-  done: 'Done',
+  all: "All",
+  todo: "To Do",
+  inProgress: "In Progress",
+  done: "Done",
 };
 
 export default function CategoryDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { tasks, categories, toggleComplete, toggleStarred } = useTasks();
-  const [group, setGroup] = useState<TaskGroup>('all');
+  const [group, setGroup] = useState<TaskGroup>("all");
 
   const category = categories.find((item) => item.id === id);
 
   if (!category) {
     return (
       <>
-        <Stack.Screen options={{ title: 'Category' }} />
+        <Stack.Screen options={{ title: "Category" }} />
         <EmptyList
           tone="danger"
           icon="alert-circle-outline"
@@ -54,41 +57,45 @@ export default function CategoryDetailScreen() {
   const categoryId = category.id;
   const categoryTasks = tasks.filter((task) => task.categoryId === categoryId);
   const counts = countTasksByGroup(categoryTasks);
-  const filters = filtersForGroup(group, categoryId, '');
+  const filters = filtersForGroup(group, categoryId, "");
   const visibleTasks = selectVisibleTasks(categoryTasks, filters, {
-    key: 'dueDate',
-    direction: 'asc',
+    key: "dueDate",
+    direction: "asc",
   });
   const { bg, fg } = resolveCategoryColor(category);
 
   const summary =
     counts.all === 0
-      ? 'No tasks yet'
+      ? "No tasks yet"
       : counts.open === 0
-        ? 'All caught up'
+        ? "All caught up"
         : `${counts.open} open · ${counts.done} done`;
 
   const segments: Segment<TaskGroup>[] = [
-    { key: 'all', label: GROUP_LABELS.all, count: counts.all },
-    { key: 'todo', label: GROUP_LABELS.todo, count: counts.todo },
-    { key: 'inProgress', label: GROUP_LABELS.inProgress, count: counts.inProgress },
-    { key: 'done', label: GROUP_LABELS.done, count: counts.done },
+    { key: "all", label: GROUP_LABELS.all, count: counts.all },
+    { key: "todo", label: GROUP_LABELS.todo, count: counts.todo },
+    {
+      key: "inProgress",
+      label: GROUP_LABELS.inProgress,
+      count: counts.inProgress,
+    },
+    { key: "done", label: GROUP_LABELS.done, count: counts.done },
   ];
 
   function handlePressTask(taskId: string) {
-    router.push({ pathname: '/task/[id]', params: { id: taskId } });
+    router.push({ pathname: "/task/[id]", params: { id: taskId } });
   }
 
   async function handleToggleComplete(task: Task) {
     try {
       await toggleComplete(task);
     } catch {
-      Toast.show({ type: 'error', text1: 'Couldn’t update task' });
+      Toast.show({ type: "error", text1: "Couldn’t update task" });
     }
   }
 
   function handleNewTask() {
-    router.push({ pathname: '/task/new', params: { categoryId } });
+    router.push({ pathname: "/task/new", params: { categoryId } });
   }
 
   const listHeader = (
@@ -101,7 +108,11 @@ export default function CategoryDetailScreen() {
         </View>
       </View>
       <View style={styles.fullBleed}>
-        <SegmentedFilter segments={segments} value={group} onChange={setGroup} />
+        <SegmentedFilter
+          segments={segments}
+          value={group}
+          onChange={setGroup}
+        />
       </View>
     </View>
   );
@@ -141,7 +152,8 @@ export default function CategoryDetailScreen() {
         style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
         onPress={handleNewTask}
         accessibilityRole="button"
-        accessibilityLabel="New task in this category">
+        accessibilityLabel="New task in this category"
+      >
         <Ionicons name="add" size={22} color="#fff" />
         <Text style={styles.fabLabel}>New task</Text>
       </Pressable>
@@ -156,12 +168,13 @@ function ListSeparator() {
 const styles = StyleSheet.create({
   header: {
     paddingTop: Spacing.lg,
-    paddingBottom: Spacing.xs,
+    paddingBottom: Spacing.md,
     gap: Spacing.lg,
   },
+
   identity: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: Spacing.md,
   },
   identityText: {
@@ -191,11 +204,11 @@ const styles = StyleSheet.create({
     height: Spacing.md,
   },
   fab: {
-    position: 'absolute',
+    position: "absolute",
     right: Spacing.lg,
     bottom: Spacing.xl,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     height: 52,
     paddingLeft: Spacing.md,
@@ -210,7 +223,7 @@ const styles = StyleSheet.create({
   fabLabel: {
     fontFamily: AppFonts.headingSemiBold,
     fontSize: 15,
-    color: '#fff',
+    color: "#fff",
     letterSpacing: 0.2,
   },
 });

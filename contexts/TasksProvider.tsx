@@ -41,6 +41,7 @@ type TasksContextValue = {
   toggleComplete: (task: Task) => Promise<Task>;
   deleteTask: (id: string) => Promise<void>;
   createCategory: (input: NewCategory) => Promise<Category>;
+  deleteCategory: (id: string) => Promise<void>;
   toggleStarred: (id: string) => void;
 };
 
@@ -141,6 +142,11 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     return created;
   }, []);
 
+  const deleteCategory = useCallback(async (id: string): Promise<void> => {
+    await taskRepository.deleteCategory(id);
+    dispatch({ type: 'category/remove', id });
+  }, []);
+
   // Starred is device-local: no backend call, just update the local set.
   const toggleStarred = useCallback((id: string) => {
     dispatch({ type: 'starred/toggle', id });
@@ -165,6 +171,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       toggleComplete,
       deleteTask,
       createCategory,
+      deleteCategory,
       toggleStarred,
     }),
     [
@@ -180,6 +187,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       toggleComplete,
       deleteTask,
       createCategory,
+      deleteCategory,
       toggleStarred,
     ],
   );

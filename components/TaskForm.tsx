@@ -20,6 +20,7 @@ type TaskFormProps = {
   submitIcon?: 'add' | 'checkmark';
   submitting?: boolean;
   onSubmit: (values: TaskFormValues) => void;
+  onCancel?: () => void;
   onCreateCategory?: (input: NewCategory) => Promise<Category>;
 };
 
@@ -58,6 +59,7 @@ export function TaskForm({
   submitIcon,
   submitting,
   onSubmit,
+  onCancel,
   onCreateCategory,
 }: TaskFormProps) {
   const [title, setTitle] = useState(initialValues?.title ?? '');
@@ -220,12 +222,31 @@ export function TaskForm({
       </ScrollView>
 
       <View style={styles.footer}>
-        <Button
-          label={submitLabel}
-          icon={submitIcon}
-          onPress={handleSubmit}
-          loading={submitting}
-        />
+        {onCancel ? (
+          <View style={styles.footerActions}>
+            <Button
+              label="Cancel"
+              variant="ghost"
+              onPress={onCancel}
+              disabled={submitting}
+              style={styles.footerActionHalf}
+            />
+            <Button
+              label={submitLabel}
+              icon={submitIcon}
+              onPress={handleSubmit}
+              loading={submitting}
+              style={styles.footerActionHalf}
+            />
+          </View>
+        ) : (
+          <Button
+            label={submitLabel}
+            icon={submitIcon}
+            onPress={handleSubmit}
+            loading={submitting}
+          />
+        )}
       </View>
     </KeyboardAvoidingView>
   );
@@ -262,5 +283,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.xl,
+  },
+  footerActions: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
+  footerActionHalf: {
+    flex: 1,
   },
 });

@@ -111,6 +111,14 @@ export class SupabaseTaskRepository implements TaskRepository {
     return toCategory(data);
   }
 
+  async deleteCategory(id: string): Promise<void> {
+    // `category_id` is `on delete set null` (see supabase/schema.sql), so any
+    // tasks in this category are uncategorised rather than deleted.
+    const { error } = await this.client.from("categories").delete().eq("id", id);
+
+    if (error) fail("deleteCategory", error);
+  }
+
   private async getTask(id: string): Promise<RemoteTask> {
     const { data, error } = await this.client
       .from("tasks")

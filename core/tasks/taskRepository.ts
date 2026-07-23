@@ -14,4 +14,5 @@ export interface TaskRepository {
   deleteTask(id: string): Promise<void>;
   listCategories(): Promise<Category[]>;
   createCategory(input: NewCategory): Promise<Category>;
+  deleteCategory(id: string): Promise<void>;
 }

@@ -12,6 +12,7 @@ type CategoryListItemProps = {
   category: Category;
   taskCount: number;
   onPress: (category: Category) => void;
+  onDelete?: (category: Category) => void;
 };
 
 // Category row
@@ -19,6 +20,7 @@ function CategoryListItemComponent({
   category,
   taskCount,
   onPress,
+  onDelete,
 }: CategoryListItemProps) {
   const { bg, fg } = resolveCategoryColor(category);
   return (
@@ -36,7 +38,17 @@ function CategoryListItemComponent({
         <Ionicons name="checkbox-outline" size={13} color={Colors.textMuted} />
         <Text style={styles.countText}>{taskCount}</Text>
       </View>
-      <Ionicons name="chevron-forward" size={18} color={Colors.textSubtle} />
+      {onDelete ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Delete ${category.name}`}
+          hitSlop={8}
+          onPress={() => onDelete(category)}
+          style={({ pressed }) => [styles.deleteButton, pressed && styles.deleteButtonPressed]}
+        >
+          <Ionicons name="trash-outline" size={18} color={Colors.danger} />
+        </Pressable>
+      ) : null}
     </Pressable>
   );
 }
@@ -77,5 +89,15 @@ const styles = StyleSheet.create({
     fontFamily: AppFonts.bodyBold,
     fontSize: 12.5,
     color: Colors.textMuted,
+  },
+  deleteButton: {
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: Radius.md,
+  },
+  deleteButtonPressed: {
+    backgroundColor: Colors.dangerMuted,
   },
 });
