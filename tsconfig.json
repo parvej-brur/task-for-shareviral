@@ -1,10 +1,10 @@
 {
   "extends": "expo/tsconfig.base",
-
   "compilerOptions": {
     "strict": true,
     "jsx": "react-native",
     "paths": {
+      "@/*": ["./*"],
       "@components/*": ["./components/*"],
       "@styles/*": ["./styles/*"],
       "@contexts/*": ["./contexts/*"],
@@ -16,7 +16,12 @@
       "@constants/*": ["./constants/*"]
     }
   },
-
-  "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts", "types/svg.d.ts"],
-  "exclude": ["**/__tests__/**/*", "**/*.test.ts", "**/*.test.tsx"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "nativewind-env.d.ts",
+    "types/svg.d.ts",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ]
 }

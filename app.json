@@ -1,15 +1,17 @@
 {
   "expo": {
-    "name": "share-viral-task",
-    "slug": "share-viral-task",
+    "name": "task-for-shareviral",
+    "slug": "task-for-shareviral",
     "version": "1.0.0",
     "orientation": "portrait",
+    "owner": "parvejsikdar",
     "icon": "./assets/images/icon.png",
     "scheme": "shareviraltask",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.parvejsikdar.taskforshareviral"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +21,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.parvejsikdar.taskforshareviral"
     },
     "web": {
       "output": "static",
@@ -40,6 +43,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e6135146-024b-4b82-b681-d55df83e2373"
+      }
     }
   }
 }
