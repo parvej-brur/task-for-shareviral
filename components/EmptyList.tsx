@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "@/components/colors";
 import { Button } from "@/components/customs/Button";
 import { AppFonts } from "@/components/fonts";
-import { Radius, Spacing } from "@/styles/layout";
+import { Spacing } from "@/styles/layout";
 
 type EmptyListProps = {
   icon?: keyof typeof Ionicons.glyphMap;
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   medallion: {
     width: 72,
     height: 72,
-    borderRadius: Radius.xl,
+    borderRadius: 20,
     backgroundColor: Colors.primaryMuted,
     alignItems: "center",
     justifyContent: "center",
