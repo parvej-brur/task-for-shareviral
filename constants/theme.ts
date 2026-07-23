@@ -1,36 +1,43 @@
-/**
- * App colors and fonts. Light theme only — single source of truth for color values.
- * Import `Colors` everywhere instead of hardcoding hex values.
- */
+const tintColor = "#159AAB";
 
-const tintColor = '#0a7ea4';
-
+// App colors
 export const Colors = {
-  text: '#11181C',
-  background: '#fff',
+  text: "#122B33",
+  textMuted: "#6B7A82",
+  background: "#F1F6F8",
+  surface: "#FFFFFF",
+  surfaceMuted: "#EDF3F5",
+  border: "#E2EAED",
   tint: tintColor,
-  icon: '#687076',
-  tabIconDefault: '#687076',
+  primary: "#159AAB",
+  primaryDark: "#0E7C8A",
+  primaryMuted: "#E1F4F6",
+  accent: "#4C7CF3",
+  accentMuted: "#E8EEFF",
+  success: "#1DAF70",
+  successMuted: "#E5F6EE",
+  danger: "#E5484D",
+  dangerMuted: "#FCECEC",
+  warning: "#E8890C",
+  warningMuted: "#FDEFD8",
+  star: "#F5B301",
+  icon: "#6B7A82",
+  tabIconDefault: "#9AA7AE",
   tabIconSelected: tintColor,
 };
 
-/**
- * App font families loaded in `app/_layout.tsx`.
- * Oswald for headings/titles, Roboto for body text. Reference these instead of
- * hardcoding the raw `fontFamily` strings in screens.
- */
+// App font families
 export const AppFonts = {
-  // Headings / titles — Oswald
-  headingLight: 'Oswald_300Light',
-  heading: 'Oswald_400Regular',
-  headingMedium: 'Oswald_500Medium',
-  headingSemiBold: 'Oswald_600SemiBold',
-  headingBold: 'Oswald_700Bold',
-  // Body text — Roboto
-  bodyThin: 'Roboto_100Thin',
-  bodyLight: 'Roboto_300Light',
-  body: 'Roboto_400Regular',
-  bodyMedium: 'Roboto_500Medium',
-  bodyBold: 'Roboto_700Bold',
-  bodyBlack: 'Roboto_900Black',
+  headingLight: "Oswald_300Light",
+  heading: "Oswald_400Regular",
+  headingMedium: "Oswald_500Medium",
+  headingSemiBold: "Oswald_600SemiBold",
+  headingBold: "Oswald_700Bold",
+
+  bodyThin: "Roboto_100Thin",
+  bodyLight: "Roboto_300Light",
+  body: "Roboto_400Regular",
+  bodyMedium: "Roboto_500Medium",
+  bodyBold: "Roboto_700Bold",
+  bodyBlack: "Roboto_900Black",
 } as const;
