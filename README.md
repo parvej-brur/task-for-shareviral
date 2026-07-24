@@ -9,6 +9,32 @@ and **TypeScript**.
 
 ---
 
+## Features
+
+**Task List** — `app/(tabs)/index.tsx`
+- Segmented filter (All / To do / In progress / Done) plus a category dropdown,
+  and a debounced (300ms) title search
+- Sort by due date or created time, either direction
+- Sync status bar (last-refreshed time, offline banner, background-refresh
+  spinner) and pull-to-refresh
+- Cache-first: renders instantly from MMKV; a failed refresh never blanks the
+  screen
+
+**Task Detail** — `app/task/[id].tsx` (edit form at `app/task/edit/[id].tsx`)
+- Full task view, edit, complete/reopen, delete (with a confirm step), and a
+  local-only star toggle
+
+**Categories** — `app/(tabs)/categories.tsx` (detail view at `app/category/[id].tsx`)
+- View and add categories, each with a colour swatch
+- Delete a category — its tasks are un-categorised (`on delete set null`),
+  never deleted
+- Tapping a category opens its own task list, filtered the same way as the
+  main Task List (bonus, beyond the brief)
+- Rename was optional and intentionally omitted — see
+  [Known limitations](#known-limitations)
+
+---
+
 ## Where to find each requirement
 
 | Requirement                              | Where                                                                                                  |
@@ -22,13 +48,25 @@ and **TypeScript**.
 | Env-based config, no hardcoded secrets    | [`config/env.ts`](config/env.ts) + [`.env.example`](.env.example)                                       |
 | Backend boundary / integration point      | [`taskRepository.ts`](core/tasks/taskRepository.ts), selected in [`core/tasks/index.ts`](core/tasks/index.ts) |
 | Supabase implementation                   | [`supabaseTaskRepository.ts`](core/tasks/supabaseTaskRepository.ts) + [`supabase/schema.sql`](supabase/schema.sql) |
-| Tests (4 suites, 37 tests)                | [`__tests__/`](__tests__)                                                                              |
+| Tests (4 suites, 38 tests)                | [`__tests__/`](__tests__)                                                                              |
 
 ---
 
 ## Setup
 
 MMKV is a native module, so the app runs in a **development build**, not Expo Go.
+
+### Prerequisites
+
+- **Node.js 20+** and npm
+- **iOS:** macOS with Xcode 16+ (includes the iOS Simulator) and CocoaPods
+  (`sudo gem install cocoapods` if `pod` isn't already on your PATH)
+- **Android:** Android Studio with an SDK platform + emulator configured (or a
+  physical device with USB debugging)
+- A [Supabase](https://supabase.com) account — free tier is enough — **only**
+  if you want to run against the real backend; otherwise skip both numbered
+  steps below, the app runs against a local mock with no account or
+  configuration needed
 
 ```bash
 npm install
@@ -99,6 +137,7 @@ Feature code is grouped by responsibility, matching the import aliases in
 app/                    expo-router screens
   (tabs)/index.tsx      Task List
   (tabs)/categories.tsx Categories
+  category/[id].tsx     Category Detail (bonus: tasks scoped to one category)
   task/[id].tsx         Task Detail
   task/new.tsx          Create Task
   task/edit/[id].tsx    Edit Task
@@ -132,21 +171,24 @@ backend is a mock or Supabase.
 
 ### On memoization
 
-There is deliberately no `useMemo` or `useCallback` anywhere in this codebase.
 **React Compiler is enabled** (`experiments.reactCompiler` in
-[`app.json`](app.json)), so components and hooks are auto-memoized at build time
-at a finer granularity than hand-written dependency arrays achieve — and without
-the stale-dependency bugs they invite. Hand-memoizing on top of it is dead weight
-that has to be kept correct for no benefit.
+[`app.json`](app.json)), so component render output is auto-memoized at build
+time at a finer granularity than hand-written dependency arrays achieve, and
+without the stale-dependency bugs they invite. Screens don't hand-write any
+`useMemo`/`useCallback` — the compiler covers them.
 
-This is worth verifying rather than assuming, since a compiler bail-out would
-silently cost the memoization. Compiling the screens and the provider through
-`babel-preset-expo` shows a memo cache allocated in every one — 115 slots for the
-Task List screen, 35 for `TasksProvider` — so nothing bails out.
+[`TasksProvider`](contexts/TasksProvider.tsx) is the one place memoization is
+still hand-written: its actions (`createTask`, `updateTask`, `refresh`, …) and
+the context value object are wrapped in `useCallback`/`useMemo` so the value
+handed to `TasksContext.Provider` stays referentially stable across renders.
+That's deliberate at a context boundary specifically — every screen in the app
+consumes this one value, so an unstable reference would re-render the whole
+tree on every provider render, which per-component compiler memoization
+doesn't reach across.
 
-What memoization is left is the kind the compiler doesn't do: `React.memo` on
-[`TaskListItem`](components/Lists/TaskListItem.tsx), so a star toggle on one row
-doesn't re-render the whole list.
+What memoization is left beyond that is the kind the compiler doesn't do:
+`React.memo` on [`TaskListItem`](components/Lists/TaskListItem.tsx), so a star
+toggle on one row doesn't re-render the whole list.
 
 ### Cache-first behaviour
 
@@ -439,7 +481,7 @@ otherwise give them the same `now()`.
 
 ## Testing approach
 
-Run with `npm test` — **4 suites, 37 tests**. They target the correctness-critical
+Run with `npm test` — **4 suites, 38 tests**. They target the correctness-critical
 **pure logic**, which is where bugs would actually hurt and where tests give the
 most signal per line:
 
@@ -486,7 +528,8 @@ mocks. UI/screen tests were deliberately skipped in the interest of focus.
   otherwise; explicitly out of scope for this task.
 - **Due dates use quick presets** (Today / Tomorrow / +3 days / Next week / none)
   rather than a full calendar picker, to avoid an extra native dependency.
-- **Categories are add-only** (rename/delete were optional and omitted).
+- **Category rename is not implemented.** Delete is (both the UI and the
+  backend `on delete set null` behaviour); rename was optional and omitted.
 - **The whole task list lives in memory** and re-derives on every change. Fine at
   seed scale; see the note below for what I'd change at 2,000 items.
 - Requires a development build (MMKV is native) — the app does not run in Expo Go.
@@ -499,7 +542,7 @@ mocks. UI/screen tests were deliberately skipped in the interest of focus.
 - Add integration tests around `TasksProvider` (cache hydrate → refresh → write)
   with the repository and MMKV mocked. That's the seam the current unit tests
   don't cover, and it's where a real bug would most plausibly hide.
-- Add a proper date picker, and category rename/delete with a confirm step.
+- Add a proper date picker, and category rename.
 - **At 2,000 items** I'd look at the derivation chain before the list: today every
   keystroke or star toggle re-runs `applyStarred` over all tasks and then a full
   filter + sort. First moves would be keying the cache by id and filtering off an
