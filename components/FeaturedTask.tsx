@@ -79,7 +79,7 @@ export function FeaturedTask({ task, category, onPress }: FeaturedTaskProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.primaryMuted,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     borderWidth: 0.5,
     borderColor: Colors.primary,
     padding: Spacing.md,
